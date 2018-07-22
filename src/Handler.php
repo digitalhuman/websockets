@@ -129,7 +129,11 @@ abstract class Handler
     {
         yield Dispatcher::listenWrite($client);
         Logger::log('worker', $this->pid, 'fwrite to', (int)$client . ' - ' . (string)$data);
-        @fwrite($client, $data);
+        $meta = stream_get_meta_data($client);
+        
+        if (isset($meta['uri']) && is_writable($meta['uri'])) {
+            fwrite($client, $data);
+        }
     }
 
     /**
